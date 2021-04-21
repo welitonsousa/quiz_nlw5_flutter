@@ -1,5 +1,4 @@
 import 'package:quiz/constants/images.dart';
-import 'package:quiz/pages/page_complete_task.dart';
 import 'package:quiz/widgets/widget_appbar.dart';
 import 'package:quiz/widgets/widget_level_button.dart';
 import 'package:flutter/material.dart';
@@ -68,18 +67,11 @@ class PageHome extends StatelessWidget {
   List<Widget> _cards(BuildContext context) {
     return [
       WidgetProgressCard(
-        image: AppImages.check,
-        counterProgress: 3,
-        counterTotalTask: 10,
-        label: 'Gerenciamento de estado',
-        onTap: () => Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (BuildContext context) =>
-                PageTask(counterProgress: 3, counterTotalTask: 10),
-          ),
-        ),
-      ),
+          image: AppImages.check,
+          counterProgress: 3,
+          counterTotalTask: 10,
+          label: 'Gerenciamento de estado',
+          onTap: () => Navigator.pushNamed(context, 'Task')),
       WidgetProgressCard(
         counterProgress: 3,
         counterTotalTask: 10,
