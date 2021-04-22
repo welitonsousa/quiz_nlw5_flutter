@@ -1,10 +1,30 @@
-class ModelTaskQuestion {
+class ModelQuiz {
+  String title;
+  int? totalQuestion;
+  List<ModelQuestion> questions;
+  int indexActualResponse;
+  bool isComplete;
+  String icon;
+
+  ModelQuiz({
+    required this.title,
+    required this.questions,
+    required this.icon,
+    required this.isComplete,
+    required this.indexActualResponse,
+  }) {
+    this.totalQuestion = this.questions.length;
+  }
+}
+
+class ModelQuestion {
+  final String title;
   final int indexCorrect;
-  final String question;
   final List<String> responses;
 
-  ModelTaskQuestion(
-      {required this.question,
-      required this.indexCorrect,
-      required this.responses});
+  ModelQuestion({
+    required this.title,
+    required this.indexCorrect,
+    required this.responses,
+  }) : assert(responses.length > 1);
 }

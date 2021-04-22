@@ -1,43 +1,80 @@
 import 'package:flutter/cupertino.dart';
-import 'package:quiz/controllets/controller_modalits.dart';
 import 'package:quiz/data/questions.dart';
-import 'package:quiz/models/model_modalits.dart';
+import 'package:quiz/models/enums/state_connection.dart';
 import 'package:quiz/models/model_task_question.dart';
 
-class ControllerTaskQuestion extends ChangeNotifier {
-  static final ControllerTaskQuestion instance = ControllerTaskQuestion();
-  int _indexActualQuestion = 0;
-  int _indexSelectecQuestion = 0;
+class ControllerQuizes extends ChangeNotifier {
+  static final i = ControllerQuizes();
 
-  bool _showCorrect = false;
-  ModelModalits _modalits = ControllerModalits
-      .instante.modalits[ControllerModalits.instante.indexModalit];
+  List<ModelQuiz>? quizes;
+  int indexQuizSelected = 0;
 
-  Tasks get task => _modalits.tasks[ControllerModalits.instante.indexModalit];
-  List<ModelTaskQuestion> get questions => task.questions;
-  ModelTaskQuestion? get question => task.questions[_indexActualQuestion];
-  int get indexQuestion => _indexActualQuestion;
-  int get indexSelected => _indexSelectecQuestion;
-  int get totalResponses => question!.responses.length;
-  bool get showCorrect => _showCorrect;
-  int get totalQuestion => task.questions.length;
-  void changeSelectedQuestion(int newIndex) {
-    _indexSelectecQuestion = newIndex;
+  Status status = Status.loading;
+  bool showResponse = false;
+  int _indexResponseSelected = 0;
+  double _globalProgress = 0;
+
+  int get indexResponseSelected => _indexResponseSelected;
+  double get globalProgress => _globalProgress;
+
+  void getQuizes() async {
+    try {
+      status = Status.loading;
+      notifyListeners();
+
+      await Future.delayed(Duration(seconds: 2));
+      quizes = dataquizes;
+      _calculateProgress();
+      status = Status.success;
+    } catch (error) {
+      status = Status.error;
+    } finally {
+      notifyListeners();
+    }
+  }
+
+  void _calculateProgress() {
+    int totalQuestions = 0;
+    int totalResponses = 0;
+
+    quizes!.forEach((quiz) {
+      totalQuestions += quiz.totalQuestion!;
+      totalResponses += quiz.indexActualResponse;
+    });
+
+    _globalProgress =
+        totalResponses > 0 ? (totalResponses / totalQuestions) : 0;
+  }
+
+  void changeResponseSelected(int newValue) {
+    _indexResponseSelected = newValue;
     notifyListeners();
   }
 
-  Future<bool> verifyResponse() async {
-    _showCorrect = true;
-    notifyListeners();
-    await Future.delayed(Duration(seconds: 1));
-    _showCorrect = false;
+  void _nextQuestion() {
+    int indexQuiz = indexQuizSelected;
+    ModelQuiz quiz = quizes![indexQuiz];
+    int indexQuestion = quiz.indexActualResponse;
 
-    if (totalQuestion > _indexActualQuestion + 1) {
-      _indexActualQuestion += 1;
-      notifyListeners();
-      return false;
+    if (quiz.questions.length - 1 == indexQuestion) {
+      quizes![indexQuiz].isComplete = true;
     }
+    if (quiz.questions.length > indexQuestion) {
+      quizes![indexQuiz].indexActualResponse += 1;
+    }
+    _calculateProgress();
     notifyListeners();
-    return true;
+  }
+
+  Future<void> showResponses() async {
+    if (!showResponse) {
+      showResponse = true;
+      notifyListeners();
+      await Future.delayed(Duration(seconds: 2));
+      showResponse = false;
+      _indexResponseSelected = 0;
+      _nextQuestion();
+      notifyListeners();
+    }
   }
 }

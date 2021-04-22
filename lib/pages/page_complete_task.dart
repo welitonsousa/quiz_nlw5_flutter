@@ -8,22 +8,33 @@ class PageTask extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: AnimatedBuilder(
+        animation: ControllerQuizes.i,
         builder: (BuildContext context, Widget? child) {
-          ModelTaskQuestion question =
-              ControllerTaskQuestion.instance.question!;
-          int indexQuestion = ControllerTaskQuestion.instance.indexQuestion;
+          int indexQuiz = ControllerQuizes.i.indexQuizSelected;
+          ModelQuiz quiz = ControllerQuizes.i.quizes![indexQuiz];
+          int indexQuestion = quiz.indexActualResponse;
+          ModelQuestion? question;
+
+          if (quiz.isComplete) {
+            question = quiz.questions[indexQuestion - 1];
+            return Scaffold(
+              appBar: _appBar(quiz),
+              body: winThisQuiz(),
+            );
+          }
+          question = quiz.questions[indexQuestion];
+
           return Scaffold(
-            appBar: _appBar(question, indexQuestion),
-            body: _body(question, indexQuestion),
+            appBar: _appBar(quiz),
+            body: quiz.isComplete ? winThisQuiz() : _body(question),
             floatingActionButton: _floatingActionButton(context),
           );
         },
-        animation: ControllerTaskQuestion.instance,
       ),
     );
   }
 
-  PreferredSize _appBar(ModelTaskQuestion question, int indexQuestion) {
+  PreferredSize _appBar(ModelQuiz quiz) {
     return PreferredSize(
       preferredSize: Size.fromHeight(120),
       child: Padding(
@@ -34,17 +45,18 @@ class PageTask extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Questão $indexQuestion'),
-                Text('de ${ControllerTaskQuestion.instance.totalQuestion - 1}'),
+                Text('Questão ${quiz.indexActualResponse}'),
+                Text('de ${quiz.totalQuestion}'),
               ],
             ),
             WidgetLinearProgressIndicator(
-              counterProgress: indexQuestion,
-              counterTotalTask:
-                  ControllerTaskQuestion.instance.totalQuestion - 1,
+              counterProgress: quiz.indexActualResponse,
+              counterTotalTask: quiz.totalQuestion!,
             ),
             Text(
-              question.question,
+              quiz.isComplete
+                  ? ""
+                  : quiz.questions[quiz.indexActualResponse].title,
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
           ],
@@ -53,25 +65,34 @@ class PageTask extends StatelessWidget {
     );
   }
 
-  Widget _body(ModelTaskQuestion question, int indexQuestion) {
+  Widget winThisQuiz() {
+    return Center(child: Text("Você terminou este Quiz"));
+  }
+
+  Widget _body(ModelQuestion question) {
     return ListView.builder(
       itemCount: question.responses.length,
-      itemBuilder: (BuildContext context, int index) {
+      itemBuilder: (_, int index) {
+        final response = question.responses[index];
         return Container(
           margin: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
           child: RadioListTile<int>(
-            title: Text('${question.responses[index]}'),
+            title: Text(
+              '$response',
+              style: TextStyle(color: _color(question, index)),
+            ),
+            activeColor: _color(question, index),
             value: index,
-            groupValue: ControllerTaskQuestion.instance.indexSelected,
+            groupValue: ControllerQuizes.i.indexResponseSelected,
             onChanged: (int? value) {
               int newValue = int.parse(value.toString());
-              ControllerTaskQuestion.instance.changeSelectedQuestion(newValue);
+              ControllerQuizes.i.changeResponseSelected(newValue);
             },
           ),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
             boxShadow: [BoxShadow(color: _color(question, index))],
-            color: _colorBG(question, index),
+            color: Colors.white,
           ),
         );
       },
@@ -80,29 +101,18 @@ class PageTask extends StatelessWidget {
 
   Widget _floatingActionButton(BuildContext context) {
     return FloatingActionButton(
-        onPressed: () async {
-          bool response =
-              await ControllerTaskQuestion.instance.verifyResponse();
-          if (response) {
-            Navigator.pop(context);
-          }
-        },
-        child: Icon(Icons.navigate_next_outlined));
+      child: Icon(Icons.navigate_next_outlined),
+      onPressed: () async {
+        await ControllerQuizes.i.showResponses();
+      },
+    );
   }
 
-  Color _color(ModelTaskQuestion question, int index) {
-    if (ControllerTaskQuestion.instance.showCorrect) {
+  Color _color(ModelQuestion question, int index) {
+    if (ControllerQuizes.i.showResponse) {
       if (question.indexCorrect == index) return Colors.green;
       return Colors.red;
     }
     return Colors.black;
-  }
-
-  Color _colorBG(ModelTaskQuestion question, int index) {
-    if (ControllerTaskQuestion.instance.showCorrect) {
-      if (question.indexCorrect == index) return Colors.green;
-      return Colors.red;
-    }
-    return Colors.white;
   }
 }

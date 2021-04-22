@@ -1,12 +1,8 @@
 import 'package:quiz/constants/colors.dart';
 import 'package:flutter/material.dart';
-
-double _percent = 75.0;
+import 'package:quiz/controllets/controller_task_question.dart';
 
 class WidgetProgressBarCircular extends StatelessWidget {
-  WidgetProgressBarCircular({double percent: 75}) {
-    _percent = percent;
-  }
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -18,7 +14,7 @@ class WidgetProgressBarCircular extends StatelessWidget {
             width: 80,
             height: 80,
             child: CircularProgressIndicator(
-              value: _percent / 100,
+              value: ControllerQuizes.i.globalProgress,
               strokeWidth: 8,
               backgroundColor: AppColors.chartSecondary,
               valueColor: AlwaysStoppedAnimation<Color>(AppColors.chartPrimary),
@@ -27,7 +23,7 @@ class WidgetProgressBarCircular extends StatelessWidget {
           Container(
             width: 80,
             child: Text(
-              "${_percent.toStringAsFixed(0)} %",
+              "${(ControllerQuizes.i.globalProgress * 100).toStringAsFixed(0)} %",
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
