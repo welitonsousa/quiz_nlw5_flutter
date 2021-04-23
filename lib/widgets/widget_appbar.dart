@@ -66,11 +66,8 @@ class WidgetAppBar extends PreferredSize {
           child: Row(
             children: [
               Expanded(
-                  child: AnimatedBuilder(
-                      animation: ControllerQuizes.i,
-                      builder: (BuildContext context, Widget? child) {
-                        return WidgetProgressBarCircular();
-                      })),
+                child: WidgetProgressBarCircular(),
+              ),
               _infoCardContainer()
             ],
           ),
