@@ -1,4 +1,3 @@
-import 'package:quiz/constants/images.dart';
 import 'package:quiz/controllets/controller_task_question.dart';
 import 'package:quiz/models/enums/state_connection.dart';
 import 'package:quiz/widgets/widget_appbar.dart';
@@ -28,7 +27,7 @@ class PageHome extends StatelessWidget {
     );
   }
 
-  Widget _body(BuildContext context) {
+  static Widget _body(BuildContext context) {
     final orientation = MediaQuery.of(context).orientation;
     return Padding(
       padding: EdgeInsets.only(top: 80, left: 20, right: 20),
@@ -76,9 +75,9 @@ class PageHome extends StatelessWidget {
     );
   }
 
-  List<String> _leveis = ["Fácil", "Médio", "Difícil", "Pertito"];
+  static List<String> _leveis = ["Fácil", "Médio", "Difícil", "Pertito"];
 
-  SliverGridDelegateWithFixedCrossAxisCount _sliverGrid(orientation) {
+  static SliverGridDelegateWithFixedCrossAxisCount _sliverGrid(orientation) {
     return SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: (orientation == Orientation.portrait) ? 2 : 3);
   }

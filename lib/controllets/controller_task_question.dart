@@ -66,8 +66,21 @@ class ControllerQuizes extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> showResponses() async {
+  void resetQuiz() {
+    quizes![indexQuizSelected].counterRigths = 0;
+    quizes![indexQuizSelected].indexActualResponse = 0;
+    quizes![indexQuizSelected].isComplete = false;
+    notifyListeners();
+  }
+
+  Future<void> showResponses({bool skip = false}) async {
     if (!showResponse) {
+      ModelQuiz quiz = quizes![indexQuizSelected];
+      ModelQuestion question = quiz.questions[quiz.indexActualResponse];
+
+      if (!skip && question.indexCorrect == _indexResponseSelected) {
+        quizes![indexQuizSelected].counterRigths += 1;
+      }
       showResponse = true;
       notifyListeners();
       await Future.delayed(Duration(seconds: 2));

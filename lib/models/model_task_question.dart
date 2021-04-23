@@ -1,6 +1,7 @@
 class ModelQuiz {
   String title;
   int? totalQuestion;
+  int counterRigths;
   List<ModelQuestion> questions;
   int indexActualResponse;
   bool isComplete;
@@ -12,6 +13,7 @@ class ModelQuiz {
     required this.icon,
     required this.isComplete,
     required this.indexActualResponse,
+    required this.counterRigths,
   }) {
     this.totalQuestion = this.questions.length;
   }
