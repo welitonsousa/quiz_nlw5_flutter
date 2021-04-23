@@ -1,3 +1,4 @@
+import 'package:quiz/constants/colors.dart';
 import 'package:quiz/constants/routes.dart';
 import 'package:flutter/material.dart';
 
@@ -9,7 +10,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(accentColor: Colors.green),
+      theme: ThemeData(
+          accentColor: Colors.green,
+          textTheme: TextTheme(bodyText2: TextStyle(color: AppColors.grey))),
       initialRoute: AppRouters.initial,
       routes: AppRouters.value,
     );

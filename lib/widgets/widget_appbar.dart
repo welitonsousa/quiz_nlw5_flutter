@@ -1,5 +1,6 @@
 import 'package:quiz/constants/gradients.dart';
 import 'package:quiz/constants/images.dart';
+import 'package:quiz/controllets/controller_quiz.dart';
 import 'package:quiz/widgets/widget_progress_bar.dart';
 import 'package:flutter/material.dart';
 
@@ -54,7 +55,7 @@ class WidgetAppBar extends PreferredSize {
     return Transform.translate(
       offset: Offset(0.1, 70.0),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
+        padding: const EdgeInsets.symmetric(horizontal: 10),
         child: Container(
           padding: EdgeInsets.symmetric(horizontal: 20),
           decoration: BoxDecoration(
@@ -64,7 +65,12 @@ class WidgetAppBar extends PreferredSize {
           ),
           child: Row(
             children: [
-              Expanded(child: WidgetProgressBarCircular()),
+              Expanded(
+                  child: AnimatedBuilder(
+                      animation: ControllerQuizes.i,
+                      builder: (BuildContext context, Widget? child) {
+                        return WidgetProgressBarCircular();
+                      })),
               _infoCardContainer()
             ],
           ),

@@ -7,22 +7,32 @@ class ControllerQuizes extends ChangeNotifier {
   static final i = ControllerQuizes();
 
   List<ModelQuiz>? quizes;
-  int indexQuizSelected = 0;
+  int _indexQuizSelected = 0;
 
   Status status = Status.loading;
   bool showResponse = false;
   int _indexResponseSelected = 0;
   double _globalProgress = 0;
+  PageController pageController = PageController();
 
   int get indexResponseSelected => _indexResponseSelected;
   double get globalProgress => _globalProgress;
+  int get indexQuizSelected => _indexQuizSelected;
+
+  void setIndexQuizSelected(int newQuiz) {
+    _indexQuizSelected = newQuiz;
+    pageController = PageController(
+        initialPage: quizes![_indexQuizSelected].indexActualResponse);
+  }
 
   void getQuizes() async {
     try {
       status = Status.loading;
       notifyListeners();
 
-      await Future.delayed(Duration(seconds: 2));
+      //time of request
+      await Future.delayed(Duration(milliseconds: 1));
+
       quizes = dataquizes;
       _calculateProgress();
       status = Status.success;
@@ -52,15 +62,14 @@ class ControllerQuizes extends ChangeNotifier {
   }
 
   void _nextQuestion() {
-    int indexQuiz = indexQuizSelected;
-    ModelQuiz quiz = quizes![indexQuiz];
+    ModelQuiz quiz = quizes![indexQuizSelected];
     int indexQuestion = quiz.indexActualResponse;
 
     if (quiz.questions.length - 1 == indexQuestion) {
-      quizes![indexQuiz].isComplete = true;
+      quizes![indexQuizSelected].isComplete = true;
     }
     if (quiz.questions.length > indexQuestion) {
-      quizes![indexQuiz].indexActualResponse += 1;
+      quizes![indexQuizSelected].indexActualResponse += 1;
     }
     _calculateProgress();
     notifyListeners();
@@ -70,6 +79,8 @@ class ControllerQuizes extends ChangeNotifier {
     quizes![indexQuizSelected].counterRigths = 0;
     quizes![indexQuizSelected].indexActualResponse = 0;
     quizes![indexQuizSelected].isComplete = false;
+    pageController.animateToPage(0,
+        duration: Duration(seconds: 1), curve: Curves.linearToEaseOut);
     notifyListeners();
   }
 
@@ -83,7 +94,7 @@ class ControllerQuizes extends ChangeNotifier {
       }
       showResponse = true;
       notifyListeners();
-      await Future.delayed(Duration(seconds: 2));
+      await Future.delayed(Duration(seconds: 1));
       showResponse = false;
       _indexResponseSelected = 0;
       _nextQuestion();

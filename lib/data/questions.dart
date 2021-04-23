@@ -6,9 +6,9 @@ List<ModelQuiz> dataquizes = [
     title: 'Gerenciamento de estados',
     questions: questions,
     icon: AppImages.blocks,
-    indexActualResponse: 0,
+    indexActualResponse: 1,
     isComplete: false,
-    counterRigths: 0,
+    counterRigths: 1,
   ),
   ModelQuiz(
     title: 'Arquivo pos build',

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:quiz/constants/colors.dart';
-import 'package:quiz/controllets/controller_task_question.dart';
+import 'package:quiz/controllets/controller_quiz.dart';
 import 'package:quiz/models/model_task_question.dart';
 import 'package:quiz/pages/page_completed_quiz.dart';
 import 'package:quiz/widgets/widget_buttoms.dart';
@@ -15,19 +15,18 @@ class PageQuiz extends StatelessWidget {
         builder: (BuildContext context, Widget? child) {
           int indexQuiz = ControllerQuizes.i.indexQuizSelected;
           ModelQuiz quiz = ControllerQuizes.i.quizes![indexQuiz];
-          int indexQuestion = quiz.indexActualResponse;
-          ModelQuestion? question;
-
-          if (quiz.isComplete) {
-            question = quiz.questions[indexQuestion - 1];
-            return PageCompletedQuiz(quiz);
-          }
-          question = quiz.questions[indexQuestion];
 
           return Scaffold(
             appBar: _appBar(context, quiz),
-            body: _body(question),
-            bottomNavigationBar: _buttomNavigator(),
+            bottomNavigationBar: _buttomNavigator(quiz),
+            body: PageView(
+              physics: NeverScrollableScrollPhysics(),
+              controller: ControllerQuizes.i.pageController,
+              children: [
+                ...quiz.questions.map((ModelQuestion e) => _body(e)).toList(),
+                PageCompletedQuiz(quiz)
+              ],
+            ),
           );
         },
       ),
@@ -48,7 +47,8 @@ class PageQuiz extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Questão ${quiz.indexActualResponse}'),
+                Text(
+                    'Questão ${quiz.indexActualResponse + (quiz.isComplete ? 0 : 1)}'),
                 Text('de ${quiz.totalQuestion}'),
               ],
             ),
@@ -111,23 +111,40 @@ class PageQuiz extends StatelessWidget {
     );
   }
 
-  Widget _buttomNavigator() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: [
-        Expanded(
-          child: Buttoms.show(
+  Widget _buttomNavigator(ModelQuiz quiz) {
+    return AnimatedContainer(
+      duration: Duration(milliseconds: 500),
+      height: quiz.isComplete ? 0 : 100,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          Expanded(
+            child: Buttoms.show(
               label: 'Pular',
               colorBG: AppColors.lightGrey,
-              onPressed: () => ControllerQuizes.i.showResponses(skip: true)),
-        ),
-        Expanded(
-          child: Buttoms.show(
-            label: 'Confirmar',
-            onPressed: () => ControllerQuizes.i.showResponses(),
+              onPressed: () async {
+                await ControllerQuizes.i.showResponses(skip: true);
+                ControllerQuizes.i.pageController.nextPage(
+                  duration: Duration(milliseconds: 500),
+                  curve: Curves.linear,
+                );
+              },
+            ),
           ),
-        )
-      ],
+          Expanded(
+            child: Buttoms.show(
+              label: 'Confirmar',
+              onPressed: () async {
+                await ControllerQuizes.i.showResponses();
+                ControllerQuizes.i.pageController.nextPage(
+                  duration: Duration(milliseconds: 500),
+                  curve: Curves.linear,
+                );
+              },
+            ),
+          )
+        ],
+      ),
     );
   }
 

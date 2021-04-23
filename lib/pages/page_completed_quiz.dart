@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:quiz/constants/colors.dart';
 import 'package:quiz/constants/images.dart';
-import 'package:quiz/controllets/controller_task_question.dart';
+import 'package:quiz/controllets/controller_quiz.dart';
 import 'package:quiz/models/model_task_question.dart';
 import 'package:quiz/widgets/widget_buttoms.dart';
+import 'package:share_plus/share_plus.dart';
 
 class PageCompletedQuiz extends StatelessWidget {
   static ModelQuiz? _quiz;
@@ -15,14 +16,6 @@ class PageCompletedQuiz extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: _body(),
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.close, color: AppColors.grey),
-          onPressed: () => Navigator.pop(context),
-        ),
-      ),
     );
   }
 
@@ -38,10 +31,14 @@ class PageCompletedQuiz extends StatelessWidget {
           _text(label: '${_quiz!.title}', bold: true, size: 25),
           _text(
               label: 'com ${_quiz!.counterRigths} de ${_quiz!.totalQuestion!}'),
+          Container(height: 20),
           Buttoms.show(
             label: 'Compartilhar',
             colorBG: AppColors.purple,
-            onPressed: () {},
+            onPressed: () {
+              Share.share(
+                  'Quiz NLW#5: obtive ${(_quiz!.counterRigths / _quiz!.totalQuestion!) * 100} % de acertos');
+            },
           ),
           Buttoms.show(
             label: 'Tentar novamente',

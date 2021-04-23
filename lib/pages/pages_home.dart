@@ -1,4 +1,4 @@
-import 'package:quiz/controllets/controller_task_question.dart';
+import 'package:quiz/controllets/controller_quiz.dart';
 import 'package:quiz/models/enums/state_connection.dart';
 import 'package:quiz/widgets/widget_appbar.dart';
 import 'package:quiz/widgets/widget_level_button.dart';
@@ -29,49 +29,48 @@ class PageHome extends StatelessWidget {
 
   static Widget _body(BuildContext context) {
     final orientation = MediaQuery.of(context).orientation;
-    return Padding(
-      padding: EdgeInsets.only(top: 80, left: 20, right: 20),
-      child: Column(
-        children: [
-          Container(
-            height: 40,
-            width: MediaQuery.of(context).size.width,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: _leveis.length,
-              itemBuilder: (_, int index) {
-                return Level.button(
-                  label: _leveis[index],
-                  onPressed: () {},
-                );
-              },
-            ),
+    return Column(
+      children: [
+        Container(height: 80),
+        Container(
+          height: 40,
+          width: MediaQuery.of(context).size.width,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: _leveis.length,
+            itemBuilder: (_, int index) {
+              return Level.button(
+                label: _leveis[index],
+                onPressed: () {},
+              );
+            },
           ),
-          Container(height: 20),
-          Expanded(
-            child: GridView.builder(
-              itemCount: ControllerQuizes.i.quizes!.length,
-              gridDelegate: _sliverGrid(orientation),
-              itemBuilder: (BuildContext context, int index) {
-                final quiz = ControllerQuizes.i.quizes![index];
-                return Padding(
-                  padding: const EdgeInsets.all(8),
-                  child: WidgetProgressCard(
-                    image: quiz.icon,
-                    counterProgress: quiz.indexActualResponse,
-                    counterTotalTask: quiz.totalQuestion!,
-                    label: quiz.title,
-                    onTap: () async {
-                      ControllerQuizes.i.indexQuizSelected = index;
-                      await Navigator.pushNamed(context, 'Task');
-                    },
-                  ),
-                );
-              },
-            ),
+        ),
+        Container(height: 20),
+        Expanded(
+          child: GridView.builder(
+            padding: EdgeInsets.symmetric(horizontal: 5),
+            itemCount: ControllerQuizes.i.quizes!.length,
+            gridDelegate: _sliverGrid(orientation),
+            itemBuilder: (BuildContext context, int index) {
+              final quiz = ControllerQuizes.i.quizes![index];
+              return Padding(
+                padding: const EdgeInsets.all(8),
+                child: WidgetProgressCard(
+                  image: quiz.icon,
+                  counterProgress: quiz.indexActualResponse,
+                  counterTotalTask: quiz.totalQuestion!,
+                  label: quiz.title,
+                  onTap: () async {
+                    ControllerQuizes.i.setIndexQuizSelected(index);
+                    await Navigator.pushNamed(context, 'Quiz');
+                  },
+                ),
+              );
+            },
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
